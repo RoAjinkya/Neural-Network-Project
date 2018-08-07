@@ -14,7 +14,7 @@ package edu.neu.coe.neuralnetwork.backpropagation;
 * As you can see, this implementation has a lot more functionality that the FeedForward
 * algorithm. I want to make clear that all these functionalities are not a property of the
 * Neural Network, but a property of Back propagation. That is why I have not implemented
-* this method in the Node and Line classes. They only have very simple values, and all
+* this method in the Neuron and Connection classes. They only have very simple values, and all
 * the calculations are done in this class.
 * 
 * I did use additional classes for the error, sigmoid and weight functions. This allows
@@ -24,10 +24,10 @@ package edu.neu.coe.neuralnetwork.backpropagation;
 
 import java.util.Random;
 
-import edu.neu.coe.neuralnetwork.FeedForward;
-import edu.neu.coe.neuralnetwork.backpropagation.math.ErrorFunction;
-import edu.neu.coe.neuralnetwork.backpropagation.math.SigmoidFunction;
-import edu.neu.coe.neuralnetwork.backpropagation.math.WeightFunction;
+import edu.neu.coe.neuralnetwork.structurebuilder.FeedForward;
+import edu.neu.coe.neuralnetwork.math.ErrorFunction;
+import edu.neu.coe.neuralnetwork.math.SigmoidFunction;
+import edu.neu.coe.neuralnetwork.math.WeightFunction;
 import edu.neu.coe.neuralnetwork.elements.*;
 
 /**
@@ -125,28 +125,28 @@ public class BackPropagation extends FeedForward {
 	private void propagateInput() {
 		
 		// for every line layer
-		for (int i=0; i<lineLayers.length; i++) {			
+		for (int i = 0; i< connectionLayers.length; i++) {
 			// for every line
-			for (int j=0; j<lineLayers[i].size(); j++) {
-				Line curLine = lineLayers[i].get(j);
+			for (int j = 0; j< connectionLayers[i].size(); j++) {
+				Connection curConnection = connectionLayers[i].get(j);
 				
-				// propagate the output of the fromNode to the toNode
+				// propagate the output of the fromNeuron to the toNeuron
 				// the output depends on the weight of this line.
-				// toNode(output) += fromNode(output) * weight
+				// toNeuron(output) += fromNeuron(output) * weight
 				
-				// NOTE: the values are being added for all lines in this Line Layer,
+				// NOTE: the values are being added for all lines in this Connection Layer,
 				//       only after all the lines have done this, the sigmoid function
 				//       is being used. this has to advantage that the sum of the inputs
 				//       of the Nodes and the output can be stored in one variable.
-				Node toNode = curLine.getToNode();
-				Node fromNode = curLine.getFromNode();
+				Neuron toNeuron = curConnection.getToNeuron();
+				Neuron fromNeuron = curConnection.getFromNeuron();
 				
-				toNode.incOutput(fromNode.getOutput() * curLine.getWeight());				
+				toNeuron.incOutput(fromNeuron.getOutput() * curConnection.getWeight());
 			}
 			
 			// now use the sigmoid function to calculate output values of the Nodes in this Layer
 			// if there are no more hidden layers, we are connecting it to the output layer.
-			NodeLayer curLayer = (i < hiddenLayers.length) ? hiddenLayers[i] : outputLayer;
+			NeuronLayer curLayer = (i < hiddenLayers.length) ? hiddenLayers[i] : outputLayer;
 
 			for (int j=0; j<curLayer.size(); j++) {
 				// sigmoid function
@@ -165,24 +165,24 @@ public class BackPropagation extends FeedForward {
 	private void propagateError() {		
 		// for each network output unit, calculate its error term
 		for (int i=0; i<outputLayer.size(); i++) {
-			OutputNode curNode = ((OutputNode) outputLayer.get(i));
+			OutputNeuron curNode = ((OutputNeuron) outputLayer.get(i));
 			double curOutput   = curNode.getOutput();
 			double errorValue =  ErrorFunction.computeOutput(curOutput, curNode.getTarget());
 			curNode.setError(errorValue);
 		}
 		
-		LineLayer curLineLayer;
-		for (int i=(lineLayers.length-1); i>=0; i--) {
+		ConnectionLayer curConnectionLayer;
+		for (int i = (connectionLayers.length-1); i>=0; i--) {
 			// calculate error values of the nodes by propagating previous error using the lines
-			curLineLayer = lineLayers[i];
-			for (int j=0; j<curLineLayer.size(); j++) {
-				Line curLine = curLineLayer.get(j);
+			curConnectionLayer = connectionLayers[i];
+			for (int j = 0; j< curConnectionLayer.size(); j++) {
+				Connection curConnection = curConnectionLayer.get(j);
 				
 				// propagate error function
-				Node toNode = curLine.getToNode();
-				Node fromNode = curLine.getFromNode();
+				Neuron toNeuron = curConnection.getToNeuron();
+				Neuron fromNeuron = curConnection.getFromNeuron();
 				
-				fromNode.incError(toNode.getError() * curLine.getWeight());
+				fromNeuron.incError(toNeuron.getError() * curConnection.getWeight());
 				
 				// and update the weight of this line
 				// NOTE: the line update function was previously in a separated method.
@@ -190,20 +190,20 @@ public class BackPropagation extends FeedForward {
 				//       it is a big bottleneck if I would use another method to iterate over
 				//       all the lines again, while I can also do it here and catch two flies
 				//       in once (is that an english expression?)
-				double deltaWeight = LEARNING_RATE * toNode.getError() * fromNode.getOutput();
-			    curLine.setWeight(WeightFunction.compute(LEARNING_RATE, MOMENTUM, toNode.getError(), fromNode.getOutput(), curLine.getWeight(), previousDeltaWeight[i][j]));
+				double deltaWeight = LEARNING_RATE * toNeuron.getError() * fromNeuron.getOutput();
+			    curConnection.setWeight(WeightFunction.compute(LEARNING_RATE, MOMENTUM, toNeuron.getError(), fromNeuron.getOutput(), curConnection.getWeight(), previousDeltaWeight[i][j]));
 			    previousDeltaWeight[i][j] = deltaWeight;
 			}
 			
 			// use error function to calculate error values of the nodes of this layer
 			// if we are at the last lineLayer, then use the inputLayer. else, if there
-			// are more than one lineLayers, we must have hiddenLayers.
-			NodeLayer curLayer = (i > 0) ? hiddenLayers[i - 1] : inputLayer;
+			// are more than one connectionLayers, we must have hiddenLayers.
+			NeuronLayer curLayer = (i > 0) ? hiddenLayers[i - 1] : inputLayer;
 			
 			for (int j=0; j<curLayer.size(); j++) {
 				// error function
-				Node curNode = curLayer.get(j);				
-				curNode.setError(ErrorFunction.compute(curNode.getOutput(), curNode.getError()));
+				Neuron curNeuron = curLayer.get(j);
+				curNeuron.setError(ErrorFunction.compute(curNeuron.getOutput(), curNeuron.getError()));
 			}
 		}
 	}
@@ -216,19 +216,19 @@ public class BackPropagation extends FeedForward {
 	private void initMomentum() {
 		int maxLines = 0;
 		
-		// find the maximal amount of Lines in a Line Layer
-		for (int i=0; i<lineLayers.length; i++) {
-			maxLines = (lineLayers[i].size() > maxLines) ? lineLayers[i].size() : maxLines;
+		// find the maximal amount of Lines in a Connection Layer
+		for (int i = 0; i< connectionLayers.length; i++) {
+			maxLines = (connectionLayers[i].size() > maxLines) ? connectionLayers[i].size() : maxLines;
 		}
 		
 		// intialize the array to this value
 		// NOTE: this leads to empty calls in the array, but still it is much
 		//       faster than using a VectorList
-		previousDeltaWeight = new double[lineLayers.length][maxLines];
+		previousDeltaWeight = new double[connectionLayers.length][maxLines];
 
 		// initialize all previous weights to 0
-		for (int i=0; i<lineLayers.length; i++) {			
-			for (int j=0; j<lineLayers[i].size(); j++) {
+		for (int i = 0; i< connectionLayers.length; i++) {
+			for (int j = 0; j< connectionLayers[i].size(); j++) {
 				previousDeltaWeight[i][j] = 0.0;
 			}
 		}
@@ -246,8 +246,8 @@ public class BackPropagation extends FeedForward {
 		minError = 1;
 		
 		// same as in initMomentum(): this causes empty cells
-		averageWeight = new double[lineLayers.length][lineLayers[0].size()];
-		minErrorWeight = new double[lineLayers.length][lineLayers[0].size()];
+		averageWeight = new double[connectionLayers.length][connectionLayers[0].size()];
+		minErrorWeight = new double[connectionLayers.length][connectionLayers[0].size()];
 	}
 
 	/************************************
@@ -310,7 +310,7 @@ public class BackPropagation extends FeedForward {
 		double sum = 0;
 		
 		for (int i=0; i<outputLayer.size(); i++) {
-			sum += Math.pow(((OutputNode) outputLayer.get(i)).getTarget() - ((OutputNode) outputLayer.get(i)).getOutput(), 2);
+			sum += Math.pow(((OutputNeuron) outputLayer.get(i)).getTarget() - ((OutputNeuron) outputLayer.get(i)).getOutput(), 2);
 		}
 		return sum * 0.5;
 	}
@@ -323,10 +323,10 @@ public class BackPropagation extends FeedForward {
 	public void initWeights() {
 		Random generator = new Random();
 		
-		for (int i=0; i<lineLayers.length; i++) {
-			for (int j=0; j<lineLayers[i].size(); j++) {
+		for (int i = 0; i< connectionLayers.length; i++) {
+			for (int j = 0; j< connectionLayers[i].size(); j++) {
 				double weight = MIN_WEIGHT + generator.nextDouble() * (Math.abs(MIN_WEIGHT) + Math.abs(MAX_WEIGHT));
-				lineLayers[i].get(j).setWeight(weight);
+				connectionLayers[i].get(j).setWeight(weight);
 			}
 		}
 	}
@@ -335,8 +335,8 @@ public class BackPropagation extends FeedForward {
      * the following functions are all very straightforward and need no extra commenting.
      */
 	private void saveCurrentWeight() {
-		for (int i=0; i<lineLayers.length; i++) {
-			for (int j=0; j<lineLayers[i].size(); j++) {
+		for (int i = 0; i< connectionLayers.length; i++) {
+			for (int j = 0; j< connectionLayers[i].size(); j++) {
 				minErrorWeight[i][j] = averageWeight[i][j] / stepSize;
 			}
 		}
@@ -344,7 +344,7 @@ public class BackPropagation extends FeedForward {
 	
 	private void setOutputTargets(int answer) {
 		for (int i=0; i<outputLayer.size(); i++) {
-			((OutputNode) outputLayer.get(i)).setTarget((i==answer)?1:0);
+			((OutputNeuron) outputLayer.get(i)).setTarget((i==answer)?1:0);
 		}
 	}
 
@@ -368,17 +368,17 @@ public class BackPropagation extends FeedForward {
 	}
 	
 	public void increaseAverageWeight() {
-		for (int i=0; i<lineLayers.length; i++) {
-			for (int j=0; j<lineLayers[i].size(); j++) {
-				averageWeight[i][j] += lineLayers[i].get(j).getWeight();
+		for (int i = 0; i< connectionLayers.length; i++) {
+			for (int j = 0; j< connectionLayers[i].size(); j++) {
+				averageWeight[i][j] += connectionLayers[i].get(j).getWeight();
 			}
 		}
 	}
 	
 	public void loadOptimalWeights() {
-		for (int i=0; i<lineLayers.length; i++) {
-			for (int j=0; j<lineLayers[i].size(); j++) {
-				lineLayers[i].get(j).setWeight(minErrorWeight[i][j]);
+		for (int i = 0; i< connectionLayers.length; i++) {
+			for (int j = 0; j< connectionLayers[i].size(); j++) {
+				connectionLayers[i].get(j).setWeight(minErrorWeight[i][j]);
 			}
 		}
 	}

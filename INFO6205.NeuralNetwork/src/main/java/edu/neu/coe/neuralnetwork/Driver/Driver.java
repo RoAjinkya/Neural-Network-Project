@@ -1,4 +1,4 @@
-package edu.neu.coe.neuralnetwork.Driver;
+package edu.neu.coe.neuralnetwork.driver;
 
 import edu.neu.coe.neuralnetwork.backpropagation.BackPropagation;
 
@@ -56,7 +56,7 @@ public class Driver {
     private BackPropagation network;
     
     // the object that actually does the calculations.
-    // since this is a Driver, we want the user to be able to stop the simulation (or
+    // since this is a driver, we want the user to be able to stop the simulation (or
     // do other things) while the simulation is running. therefore this object is
     // a thread; it will run in the background and communicate with the [network]
     // object but send results to this class.
@@ -86,7 +86,7 @@ public class Driver {
 			//network = new BackPropagation(networkLayers);
 			network = new BackPropagation(networkLayers);
 			
-			// and initiate it with the Driver values
+			// and initiate it with the driver values
 			network.setStepSize(stepSize);
 			network.setInitWeights(INIT_WEIGHT);
 			network.setMomentum(MOMENTUM);

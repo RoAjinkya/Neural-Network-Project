@@ -1,7 +1,7 @@
-package edu.neu.coe.neuralnetwork;
+package edu.neu.coe.neuralnetwork.structurebuilder;
 
-import edu.neu.coe.neuralnetwork.elements.LineLayer;
-import edu.neu.coe.neuralnetwork.elements.NodeLayer;
+import edu.neu.coe.neuralnetwork.elements.ConnectionLayer;
+import edu.neu.coe.neuralnetwork.elements.NeuronLayer;
 
 /**
  * @author ajinkyarode
@@ -30,16 +30,16 @@ public interface NeuralNetwork {
 	void connectNodes();
 	
 	/************************************
-     * connectLayers(NodeLayer layer1, NodeLayer layer2)
+     * connectLayers(NeuronLayer layer1, NeuronLayer layer2)
      *---------------------------------------
-	 * (pre)  NodeLayer layer1 and layer2 are not empty
+	 * (pre)  NeuronLayer layer1 and layer2 are not empty
 	 * 
 	 * Connect the nodes of the two layers. 
 	 * No restriction, this method can be implemented as a FeedForward network
 	 * (every node in a layer connects to all the nodes in the previous layer), or a FullyConnected
 	 * network, or something else.
 	 */
-	LineLayer connectLayers(NodeLayer layer1, NodeLayer layer2);
+	ConnectionLayer connectLayers(NeuronLayer layer1, NeuronLayer layer2);
 	
 	// test and train function
 	void train(double[] image, int answer);

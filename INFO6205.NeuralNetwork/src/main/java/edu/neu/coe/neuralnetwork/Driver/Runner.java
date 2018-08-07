@@ -1,4 +1,4 @@
-package edu.neu.coe.neuralnetwork.Driver;
+package edu.neu.coe.neuralnetwork.driver;
 
 
 /*********************************
@@ -6,7 +6,7 @@ package edu.neu.coe.neuralnetwork.Driver;
 *
 * Thread object that will work the neural network.
 * Is capable of both training and testing and does image processing as well.
-* It reports results back to its parent, which is a Driver.
+* It reports results back to its parent, which is a driver.
 * Gets all the required settings for the network from the parent.
 *
 * The thread dies when finished, or when interrupted.
@@ -92,7 +92,7 @@ public class Runner extends Thread {
 					}
 
 					// collect the average error value of the network every [stepSize]
-					// times and send these values to the plotter and the debug window in the Driver
+					// times and send these values to the plotter and the debug window in the driver
 					if (example % parent.getStepSize() == 0) {
 						double currentStepError = network.getCurStepError();
 						accuracy += currentStepError;
@@ -126,7 +126,7 @@ public class Runner extends Thread {
      * processImage(int image[][], boolean[] preProcessor)
      *---------------------------------------
      * preprocess the image according to the values of the preProcessor
-     * see Driver.java for explanation about this technique
+     * see driver.java for explanation about this technique
      */
     private double[] processImage(int image[][]) {
     	int imgCanvas = 4;
