@@ -3,9 +3,9 @@ package edu.neu.coe.neuralnetwork.elements;
 
 
 /*********************************
-* OutputNode.java
+* OutputNeuron.java
 * 
-* Simple extension to the Node class
+* Simple extension to the Neuron class
 * an output node should also contain a target value
 */
 
@@ -13,10 +13,10 @@ package edu.neu.coe.neuralnetwork.elements;
  * @author ajinkyarode
  *
  */
-public class OutputNode extends Node  {	
+public class OutputNeuron extends Neuron {
 	private double target  = 0;
 	
-	public OutputNode() { }
+	public OutputNeuron() { }
 
 	public void setTarget(double target) {
 		this.target = target;

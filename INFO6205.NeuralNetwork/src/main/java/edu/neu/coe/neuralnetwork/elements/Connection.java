@@ -1,7 +1,7 @@
 package edu.neu.coe.neuralnetwork.elements;
 
 /*********************************
-* Line.java
+* Connection.java
 * 
 * A line in the network.
 * A line is simply a connection between two nodes, and contains a weight.
@@ -13,19 +13,19 @@ package edu.neu.coe.neuralnetwork.elements;
  * @author ketulshukla
  *
  */
-public class Line {
+public class Connection {
 	private double weight = 0;	
-	private Node   fromNode;
-	private Node   toNode;
+	private Neuron fromNeuron;
+	private Neuron toNeuron;
 	
-	public Line(Node fromNode, Node toNode) {
-		this.fromNode = fromNode;
-		this.toNode   = toNode;
+	public Connection(Neuron fromNeuron, Neuron toNeuron) {
+		this.fromNeuron = fromNeuron;
+		this.toNeuron = toNeuron;
 	}
 	
-	public Line(Node fromNode, Node toNode, double weight) {
-		this.fromNode = fromNode;
-		this.toNode   = toNode;
+	public Connection(Neuron fromNeuron, Neuron toNeuron, double weight) {
+		this.fromNeuron = fromNeuron;
+		this.toNeuron = toNeuron;
 		
 		this.weight = weight;
 	}
@@ -38,11 +38,11 @@ public class Line {
 		return weight;
 	}
 	
-	public Node getFromNode() {
-		return fromNode;
+	public Neuron getFromNeuron() {
+		return fromNeuron;
 	}
 	
-	public Node getToNode() {
-		return toNode;
+	public Neuron getToNeuron() {
+		return toNeuron;
 	}
 }

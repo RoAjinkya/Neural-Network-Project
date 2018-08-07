@@ -1,7 +1,7 @@
 package edu.neu.coe.neuralnetwork.elements;
 
 /*********************************
-* Node.java
+* Neuron.java
 * 
 * A node in the network.
 * My goal was to keep the nodes as simple as possible.
@@ -15,13 +15,13 @@ package edu.neu.coe.neuralnetwork.elements;
  * @author ajinkyarode
  *
  */
-public class Node  {	
-	// the Node possesses only an output and an error value
+public class Neuron {
+	// the Neuron possesses only an output and an error value
 	// please read BackPropagation for more information about the propagation technique.
 	protected double output  = 0;
 	protected double error   = 0;
 	
-	public Node() { }
+	public Neuron() { }
 		
 	public void reset() {
 		this.output = 0;

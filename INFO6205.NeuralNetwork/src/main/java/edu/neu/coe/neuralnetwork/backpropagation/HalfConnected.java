@@ -30,9 +30,9 @@ public class HalfConnected extends BackPropagation {
 		super(networkLayers);
 	}
 
-	public LineLayer connectLayers(NodeLayer layer1, NodeLayer layer2) {
-		// first determine the size of the LineLayer
-		LineLayer tempLineLayer = new LineLayer(layer1.size() * (layer2.size()/2));
+	public ConnectionLayer connectLayers(NeuronLayer layer1, NeuronLayer layer2) {
+		// first determine the size of the ConnectionLayer
+		ConnectionLayer tempConnectionLayer = new ConnectionLayer(layer1.size() * (layer2.size()/2));
 		
 		Random generator = new Random();
 
@@ -41,11 +41,11 @@ public class HalfConnected extends BackPropagation {
 				
 				int curPos = layer1.size()/2 * i + j;
 				// connect layer2 to a random node in layer 1
-				tempLineLayer.add(new Line(layer1.get(generator.nextInt(layer1.size())), layer2.get(i)), curPos);
+				tempConnectionLayer.add(new Connection(layer1.get(generator.nextInt(layer1.size())), layer2.get(i)), curPos);
 			}	
 		}
 		
-		return tempLineLayer;	
+		return tempConnectionLayer;
 	}
 	
 }

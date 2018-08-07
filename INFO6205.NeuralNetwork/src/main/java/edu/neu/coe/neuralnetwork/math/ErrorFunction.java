@@ -1,4 +1,4 @@
-package edu.neu.coe.neuralnetwork.backpropagation.math;
+package edu.neu.coe.neuralnetwork.math;
 
 
 

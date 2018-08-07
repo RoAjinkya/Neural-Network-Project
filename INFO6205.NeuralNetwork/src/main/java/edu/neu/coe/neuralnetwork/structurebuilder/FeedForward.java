@@ -1,23 +1,20 @@
-package edu.neu.coe.neuralnetwork;
+package edu.neu.coe.neuralnetwork.structurebuilder;
 
-import edu.neu.coe.neuralnetwork.elements.Line;
-import edu.neu.coe.neuralnetwork.elements.LineLayer;
-import edu.neu.coe.neuralnetwork.elements.Node;
-import edu.neu.coe.neuralnetwork.elements.NodeLayer;
-import edu.neu.coe.neuralnetwork.elements.OutputNode;
+import edu.neu.coe.neuralnetwork.elements.*;
+import edu.neu.coe.neuralnetwork.elements.ConnectionLayer;
 
 // FFANN = feed forward artificial neural network
 /**
  * @author ajinkyarode
  *
  */
-public abstract class FeedForward implements NeuralNetwork {	
+public abstract class FeedForward implements NeuralNetwork {
 	// the layers of the network
-	protected NodeLayer inputLayer;
-	protected NodeLayer[] hiddenLayers;
-	protected NodeLayer outputLayer;
+	protected NeuronLayer inputLayer;
+	protected NeuronLayer[] hiddenLayers;
+	protected NeuronLayer outputLayer;
 	
-	protected LineLayer[] lineLayers;
+	protected ConnectionLayer[] connectionLayers;
 	
 	// inserts an image into the network
 	// abstract: to be implemented by the algorithm that inherits this class
@@ -33,49 +30,49 @@ public abstract class FeedForward implements NeuralNetwork {
 	public void addNodes(int[] networkLayers) {
 		// first initialize all the layers with their corresponding size (this is
 		// what i hate about arrays)
-		inputLayer = new NodeLayer(networkLayers[0]);
-		hiddenLayers = new NodeLayer[networkLayers.length-2];
-		outputLayer = new NodeLayer(networkLayers[networkLayers.length-1]);
+		inputLayer = new NeuronLayer(networkLayers[0]);
+		hiddenLayers = new NeuronLayer[networkLayers.length-2];
+		outputLayer = new NeuronLayer(networkLayers[networkLayers.length-1]);
 		
 		// now add the Nodes to the input layer
 		for (int i=0; i<networkLayers[0]; i++) {
-			inputLayer.add(new Node(), i);
+			inputLayer.add(new Neuron(), i);
 		}
 
 		// then all hidden nodes to their corresponding layer
 		for (int i=1; i<networkLayers.length - 1; i++) {
-			NodeLayer tempNodeLayer = new NodeLayer(networkLayers[i]);
+			NeuronLayer tempNeuronLayer = new NeuronLayer(networkLayers[i]);
 			
 			for (int j=0; j<networkLayers[i]; j++) {
-				tempNodeLayer.add(new Node(), j);
+				tempNeuronLayer.add(new Neuron(), j);
 			}
-			hiddenLayers[i-1] = tempNodeLayer;
+			hiddenLayers[i-1] = tempNeuronLayer;
 		}
 		
 		// finally add output nodes
 		for (int i=0; i<networkLayers[networkLayers.length-1]; i++) {
-			outputLayer.add(new OutputNode(), i);
+			outputLayer.add(new OutputNeuron(), i);
 		}
 	}
 	
 	public void connectNodes() {
-		NodeLayer connectingOutputLayer;
+		NeuronLayer connectingOutputLayer;
 		
-		// lineLayers: an array of LineLayer that contain all the layers
+		// connectionLayers: an array of ConnectionLayer that contain all the layers
 		// of the lines. first determine the size of this array
 		//
 		// connect at least the input to the output (1), for every
 		// hidden layer we need an extra line layer
-		lineLayers = new LineLayer[hiddenLayers.length + 1];
+		connectionLayers = new ConnectionLayer[hiddenLayers.length + 1];
 		
 		// connect input node to next layer, is this a hidden layer?
 		if (hiddenLayers.length > 0) {
 			// there is at least one hidden node layer, so connect every node in the first hidden layer to all input nodes
-			lineLayers[0] = connectLayers(inputLayer, hiddenLayers[0]);
+			connectionLayers[0] = connectLayers(inputLayer, hiddenLayers[0]);
 			
 			// now iterate over all hidden layers and connect them to each other
 			for (int i=1; i<hiddenLayers.length; i++) {				
-				lineLayers[i] = connectLayers(hiddenLayers[i-1], hiddenLayers[i]);
+				connectionLayers[i] = connectLayers(hiddenLayers[i-1], hiddenLayers[i]);
 			}
 			
 			// make sure that the output layer will connect to the last hidden layer			
@@ -86,26 +83,26 @@ public abstract class FeedForward implements NeuralNetwork {
 		}
 		
 		// connect every output node to all the nodes in the connectingOutputLayer
-		lineLayers[lineLayers.length - 1] = connectLayers(connectingOutputLayer, outputLayer);
+		connectionLayers[connectionLayers.length - 1] = connectLayers(connectingOutputLayer, outputLayer);
 	}
 		
 	// the core of the FeedForward algorithm:
 	// connect every node of layer1 to all the nodes of layer2
-	public LineLayer connectLayers(NodeLayer layer1, NodeLayer layer2) {
-		// first determine the size of the LineLayer
-		LineLayer tempLineLayer = new LineLayer(layer1.size() * layer2.size());
+	public ConnectionLayer connectLayers(NeuronLayer layer1, NeuronLayer layer2) {
+		// first determine the size of the ConnectionLayer
+		ConnectionLayer tempConnectionLayer = new ConnectionLayer(layer1.size() * layer2.size());
 		
 		for (int i=0; i<layer2.size(); i++) {
 			for (int j=0; j<layer1.size(); j++) {
 				// iterate over all the Nodes in layer1 and connect them to every node
 				// of layer 2. first determine position in the array.
 				int curPos = layer1.size() * i + j;
-				// then add the line to the LineLayer
-				tempLineLayer.add(new Line(layer1.get(j), layer2.get(i)), curPos);
+				// then add the line to the ConnectionLayer
+				tempConnectionLayer.add(new Connection(layer1.get(j), layer2.get(i)), curPos);
 			}	
 		}
 		
-		return tempLineLayer;	
+		return tempConnectionLayer;
 	}
 				
 	public void inputExample(double image[]) {	
@@ -118,10 +115,10 @@ public abstract class FeedForward implements NeuralNetwork {
 		String str = "";
 		
 		str += "input nodes: " + inputLayer.size();
-		str += "\n-- connections: " + lineLayers[0].size();
+		str += "\n-- connections: " + connectionLayers[0].size();
 		for (int i=0; i<hiddenLayers.length; i++) {
 			str += "\nhidden layer (" + i + "): " + hiddenLayers[i].size();
-			str += "\n-- connections: " + lineLayers[i + 1].size();
+			str += "\n-- connections: " + connectionLayers[i + 1].size();
 		}
 		str += "\noutput nodes: " + outputLayer.size() + "\n\n";
 		return str;
