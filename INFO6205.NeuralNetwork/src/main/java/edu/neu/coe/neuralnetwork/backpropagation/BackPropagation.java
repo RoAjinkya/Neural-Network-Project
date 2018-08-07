@@ -24,8 +24,7 @@ package edu.neu.coe.neuralnetwork.backpropagation;
 
 import java.util.Random;
 
-import com.neu.coe.nuralnetwork.FeedForward;
-
+import edu.neu.coe.neuralnetwork.FeedForward;
 import edu.neu.coe.neuralnetwork.backpropagation.math.ErrorFunction;
 import edu.neu.coe.neuralnetwork.backpropagation.math.SigmoidFunction;
 import edu.neu.coe.neuralnetwork.backpropagation.math.WeightFunction;
