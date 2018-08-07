@@ -1,4 +1,4 @@
-package com.neu.coe.nuralnetwork;
+package edu.neu.coe.neuralnetwork;
 
 import edu.neu.coe.neuralnetwork.elements.Line;
 import edu.neu.coe.neuralnetwork.elements.LineLayer;
