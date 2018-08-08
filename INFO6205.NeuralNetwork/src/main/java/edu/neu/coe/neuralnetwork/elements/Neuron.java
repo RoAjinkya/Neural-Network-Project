@@ -46,9 +46,18 @@ public class Neuron {
 	
 	public double getOutput() {
 		return this.output;
+		
 	}
 	
 	public double getError() {
 		return error;
 	}
+
+	public Neuron(double output, double error) {
+		super();
+		this.output = output;
+		this.error = error;
+	}
+	
+	
 }
