@@ -115,10 +115,10 @@ public abstract class FeedForward implements NeuralNetwork {
 		String str = "";
 		
 		str += "input nodes: " + inputLayer.size();
-		str += "\n-- connections: " + connectionLayers[0].size();
+		str += "\n connections: " + connectionLayers[0].size();
 		for (int i=0; i<hiddenLayers.length; i++) {
 			str += "\nhidden layer (" + i + "): " + hiddenLayers[i].size();
-			str += "\n-- connections: " + connectionLayers[i + 1].size();
+			str += "\n connections: " + connectionLayers[i + 1].size();
 		}
 		str += "\noutput nodes: " + outputLayer.size() + "\n\n";
 		return str;
