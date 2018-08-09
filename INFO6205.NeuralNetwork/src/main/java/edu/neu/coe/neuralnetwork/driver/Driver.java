@@ -27,7 +27,7 @@ public class Driver {
     private final double INIT_WEIGHT[] = { -0.05, 0.05 };
     
     // files to use as image database, both for training and testing
-    private final String DIGIT_PATH = "digit_db/";
+    private final String DIGIT_PATH = "digit_data/";
     private final String FILE_TRAIN[] = { DIGIT_PATH + "train-images-idx3-ubyte", DIGIT_PATH + "train-labels-idx1-ubyte" };
     private final String FILE_TEST[] = { DIGIT_PATH + "t10k-images-idx3-ubyte", DIGIT_PATH + "t10k-labels-idx1-ubyte" };
     
